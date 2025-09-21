@@ -9,7 +9,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Shadow Swap - Extreme Hard Mode")
 clock = pygame.time.Clock()
 
-# -------------------
+
 # Colors
 LIGHT_BG = (180, 220, 255)
 SHADOW_BG = (50, 50, 80)
@@ -20,18 +20,16 @@ GOLD = (255, 215, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-# -------------------
 # Font
 pygame.font.init()
 arcade_font = pygame.font.SysFont("arcade", 40)
 
-# -------------------
 # Load images
 player_img = pygame.image.load("angel2.png").convert_alpha()
 player_img = pygame.transform.scale(player_img, (60, 60))
 
 key_img = pygame.image.load("key.png").convert_alpha()
-key_img = pygame.transform.scale(key_img, (80, 80))
+key_img = pygame.transform.scale(key_img, (120, 65))
 
 enemy_img = pygame.image.load("monster.png").convert_alpha()
 enemy_img = pygame.transform.scale(enemy_img, (52, 52))
@@ -39,12 +37,12 @@ enemy_img = pygame.transform.scale(enemy_img, (52, 52))
 # Door (if exists)
 try:
     door_img = pygame.image.load("door.png").convert_alpha()
-    door_img = pygame.transform.scale(door_img, (40, 60))
+    door_img = pygame.transform.scale(door_img, (80, 60))
 except:
     door_img = pygame.Surface((40, 60))
     door_img.fill(GOLD)
 
-# -------------------
+
 # Load sounds
 try:
     key_sound = pygame.mixer.Sound(r"C:\Users\key.wav.wav")
@@ -85,7 +83,7 @@ class Player(pygame.sprite.Sprite):
             if jump_sound:
                 jump_sound.play()
 
-# -------------------
+
 # Platform class
 class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y, w, h, color, moving=False, move_range=0, speed=2, vertical=False, visible_world="both", fading=False):
@@ -119,7 +117,6 @@ class Platform(pygame.sprite.Sprite):
                 self.alpha = max(50, self.alpha - 5)
             self.image.set_alpha(self.alpha)
 
-# -------------------
 # Key class
 class Key(pygame.sprite.Sprite):
     def __init__(self, x, y, visible_world="both"):
@@ -128,7 +125,6 @@ class Key(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(x, y))
         self.visible_world = visible_world
 
-# -------------------
 # Enemy class
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, patrol_range=0, speed=2):
@@ -145,7 +141,6 @@ class Enemy(pygame.sprite.Sprite):
             if abs(self.rect.x - self.start_x) > self.patrol_range:
                 self.speed *= -1
 
-# -------------------
 # Door class
 class Door(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -153,7 +148,6 @@ class Door(pygame.sprite.Sprite):
         self.image = door_img
         self.rect = self.image.get_rect(topleft=(x, y))
 
-# -------------------
 # LEVELS DATA (6 levels)
 LEVELS = [
     {
@@ -201,7 +195,7 @@ LEVELS = [
     }
 ]
 
-# -------------------
+
 # Build level function
 def build_level(index):
     level = LEVELS[index]
@@ -220,14 +214,12 @@ def build_level(index):
     door = Door(*level["door"])
     return light, shadow, keys, enemies, door
 
-# -------------------
 # Game state
 current_level = 0
 player = Player(50,500)
 current_world = "light"
 light_platforms, shadow_platforms, keys, enemies, door = build_level(current_level)
 
-# -------------------
 # Instructions
 instructions = [
     "INSTRUCTIONS:",
@@ -267,7 +259,6 @@ screen.blit(start_text, (WIDTH//2 - start_text.get_width()//2, HEIGHT//2))
 pygame.display.flip()
 pygame.time.delay(1000)
 
-# -------------------
 # Main Game Loop
 running = True
 level_complete = False
@@ -333,10 +324,11 @@ while running:
     screen.blit(player.image, player.rect)
 
     # HUD
-    level_text = arcade_font.render(f"LEVEL {current_level+1}", True, WHITE)
-    screen.blit(level_text, (WIDTH//2 - level_text.get_width()//2, 10))
-    key_text = arcade_font.render(f"Keys remaining: {len(keys)}", True, WHITE)
-    screen.blit(key_text, (10, 60))
+    # HUD (all in one line)
+    hud_text = arcade_font.render(
+    	f"LEVEL {current_level+1}      Keys: {len(keys)}      World: {current_world.upper()}",
+    	True,WHITE)
+    screen.blit(hud_text, (WIDTH//2 - hud_text.get_width()//2, 10))
 
     # Level Complete
     if level_complete:
